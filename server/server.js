@@ -2,6 +2,8 @@ const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const PORT = 5005;
+const cohorts = require("./data/cohorts.json")
+const students = require("./data/students.json")
 
 // STATIC DATA
 // Devs Team - Import the provided files with JSON data of students and cohorts here:
@@ -27,9 +29,17 @@ app.use(cookieParser());
 // ...
 app.get("/docs", (req, res) => {
   res.sendFile(__dirname + "/views/docs.html");
-});
 
+})
+app.get('/api/cohorts', (_, response) => {
+  response.json(cohorts)
+})
 
+app.get('/api/students', (_, response) => {
+  response.json(students)
+})
+
+;
 // START SERVER
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
