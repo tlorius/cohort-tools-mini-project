@@ -54,13 +54,60 @@ app.get("/api/cohorts", (req, res) => {
     });
 });
 
+app.post("/api/cohorts", (req, res) => {
+  Cohort.create(req.body)
+    .then((createdCohort) => {
+      console.log("Cohort created ->", createdCohort);
+      res.status(201).send(createdCohort);
+    })
+    .catch((error) => {
+      console.error("Error while creating the cohort ->", error);
+      res.status(500).send({ error: "Failed to create the cohort" });
+    });
+});
+
+app.get("/api/cohorts/:cohortId", (req, res) => {
+  const cohortId = req.params.cohortId;
+  Cohort.find({ cohort: cohortId })
+    .then((cohort) => {
+      res.status(200).send(cohort);
+    })
+    .catch((error) => {
+      console.error("Error while retrieving cohort ->", error);
+      res.status(500).send({ error: "Failed to retrieve cohort" });
+    });
+});
+
+app.put("/api/cohorts/:cohortId", (req, res) => {
+  const cohortId = req.params.cohortId;
+  Cohort.findByIdAndUpdate(cohortId, req.body, { new: true })
+    .then((updatedCohort) => {
+      res.status(204).send(updatedCohort);
+    })
+    .catch((error) => {
+      console.error("Error while updating cohort ->", error);
+      res.status(500).send({ error: "Failed to update cohort" });
+    });
+});
+
+app.delete("/api/cohorts/:cohortId", (req, res) => {
+  Cohort.findByIdAndDelete(req.params.cohortId)
+    .then((result) => {
+      res.status(204).send();
+    })
+    .catch((error) => {
+      console.error("Error while deleting cohort ->", error);
+      res.status(500).send({ error: "Failed to delete cohort" });
+    });
+});
+
 app.get("/api/students", (req, res) => {
   Student.find({})
     .then((students) => {
       res.status(200).send(students);
     })
     .catch((error) => {
-      console.error("Error while retrieving studnets ->", error);
+      console.error("Error while retrieving students ->", error);
       res.status(500).send({ error: "Failed to retrieve students" });
     });
 });
@@ -86,8 +133,43 @@ app.get("/api/students/cohort/:cohortId", (req, res) => {
       res.status(200).send(students);
     })
     .catch((error) => {
-      console.error("Error while retrieving studnets ->", error);
+      console.error("Error while retrieving students ->", error);
       res.status(500).send({ error: "Failed to retrieve students" });
+    });
+});
+
+app.get("/api/students/:studentId", (req, res) => {
+  const studentId = req.params.studentId;
+  Student.find({ _id: studentId })
+    .then((student) => {
+      res.status(200).send(student);
+    })
+    .catch((error) => {
+      console.error("Error while retrieving student ->", error);
+      res.status(500).send({ error: "Failed to retrieve student" });
+    });
+});
+
+app.put("/api/students/:studentId", (req, res) => {
+  const studentId = req.params.studentId;
+  Student.findByIdAndUpdate(studentId, req.body, { new: true })
+    .then((updatedStudent) => {
+      res.status(204).send(updatedStudent);
+    })
+    .catch((error) => {
+      console.error("Error while updating student ->", error);
+      res.status(500).send({ error: "Failed to update student" });
+    });
+});
+
+app.delete("/api/students/:studentId", (req, res) => {
+  Student.findByIdAndDelete(req.params.studentId)
+    .then((result) => {
+      res.status(204).send();
+    })
+    .catch((error) => {
+      console.error("Error while deleting student ->", error);
+      res.status(500).send({ error: "Failed to delete student" });
     });
 });
 
