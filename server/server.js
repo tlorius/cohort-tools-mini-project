@@ -97,7 +97,7 @@ app.delete("/api/cohorts/:cohortId", async (req, res) => {
 //Retrieves all of the students in the database collection
 app.get("/api/students", async (req, res) => {
   try {
-    const students = await Student.find({});
+    const students = await Student.find({}).populate("cohort")
     res.status(200).json(students);
   } catch (error) {
     res.status(500).json({ error: "Failed to retrieve students" });
@@ -120,7 +120,7 @@ app.post("/api/students", async (req, res) => {
 app.get("/api/students/cohort/:cohortId", async (req, res) => {
   const cohortId = req.params.cohortId;
   try {
-    const students = await Student.find({ cohort: cohortId });
+    const students = await Student.find({ cohort: cohortId }).populate("cohort")
     res.status(200).json(students);
   } catch (error) {
     res.status(500).json({ error: "Failed to retrieve students" });
@@ -128,9 +128,10 @@ app.get("/api/students/cohort/:cohortId", async (req, res) => {
 });
 //Retrieves a specific student by id
 app.get("/api/students/:studentId", async (req, res) => {
+ 
   const studentId = req.params.studentId;
   try {
-    const student = await Student.findById(studentId);
+    const student = await Student.findById(studentId).populate("cohort")
     res.status(200).json(student);
   } catch (error) {
     res.status(500).json({ error: "Failed to retrieve student" });
