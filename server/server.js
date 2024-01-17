@@ -56,7 +56,11 @@ app.post("/api/cohorts", async (req, res) => {
     const createdCohort = await Cohort.create(req.body);
     res.status(201).json(createdCohort);
   } catch (error) {
-    res.status(500).json({ error: "Failed to create the cohort" });
+    if (error.code === 11000) {
+      res.status(400).json({ error, message: "Duplicate somewhere" });
+    } else {
+      res.status(500).json({ error, message: "Unable to create cohort" });
+    }
   }
 });
 // Retrieves a specific cohort by id
@@ -105,7 +109,11 @@ app.post("/api/students", async (req, res) => {
     const createdStudent = await Student.create(req.body);
     res.status(201).json(createdStudent);
   } catch (error) {
-    res.status(500).json({ error: "Failed to create the student" });
+    if (error.code === 11000) {
+      res.status(400).json({ error, message: "Duplicate somewhere" });
+    } else {
+      res.status(500).json({ error, message: "Unable to create student" });
+    }
   }
 });
 //Retrieves all of the students for a given cohort
