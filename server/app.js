@@ -13,8 +13,9 @@ const Student = require("./models/Student");
 // STATIC DATA
 // Devs Team - Import the provided files with JSON data of students and cohorts here:
 // ...
+/*
 const cohortsData = require("./cohorts.json");
-const studentsData = require("./students.json");
+const studentsData = require("./students.json");*/
 
 // INITIALIZE EXPRESS APP - https://expressjs.com/en/4x/api.html#express
 const app = express();
@@ -60,9 +61,6 @@ app.get("/api/cohorts", async (req, res) => {
 app.get("/api/cohorts/:cohortId", async (req, res) => {
   try {
     const cohort = await Cohort.findById(req.params.cohortId);
-    if (!cohort) {
-      return res.status(404).send("Cohort not found");
-    }
     res.json(cohort);
   } catch (err) {
     res.status(500).send("Error fetching cohort");
@@ -86,9 +84,6 @@ app.put("/api/cohorts/:cohortId", async (req, res) => {
       req.body,
       { new: true }
     );
-    if (!updatedCohort) {
-      return res.status(404).send("Cohort not found");
-    }
     res.json(updatedCohort);
   } catch (err) {
     res.status(500).send("Error updating cohort");
@@ -98,10 +93,7 @@ app.put("/api/cohorts/:cohortId", async (req, res) => {
 // DELETE route to delete a specific cohort by id
 app.delete("/api/cohorts/:cohortId", async (req, res) => {
   try {
-    const deletedCohort = await Cohort.findByIdAndDelete(req.params.cohortId);
-    if (!deletedCohort) {
-      return res.status(404).send("Cohort not found");
-    }
+    await Cohort.findByIdAndDelete(req.params.cohortId);
     res.status(204).send();
   } catch (err) {
     res.status(500).send("Error deleting cohort");
@@ -147,9 +139,7 @@ app.get("/api/students/cohort/:cohortId", async (req, res) => {
 app.get("/api/students/:studentId", async (req, res) => {
   try {
     const student = await Student.findById(req.params.studentId);
-    if (!student) {
-      return res.status(404).send("Student not found");
-    }
+
     res.json(student);
   } catch (err) {
     res.status(500).send("Error fetching student");
@@ -164,9 +154,6 @@ app.put("/api/students/:studentId", async (req, res) => {
       req.body,
       { new: true }
     );
-    if (!student) {
-      return res.status(404).send("Student not found");
-    }
     res.json(student);
   } catch (err) {
     res.status(500).send("Error updating student");
