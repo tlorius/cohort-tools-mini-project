@@ -139,7 +139,6 @@ app.get("/api/students/cohort/:cohortId", async (req, res) => {
 app.get("/api/students/:studentId", async (req, res) => {
   try {
     const student = await Student.findById(req.params.studentId);
-
     res.json(student);
   } catch (err) {
     res.status(500).send("Error fetching student");
