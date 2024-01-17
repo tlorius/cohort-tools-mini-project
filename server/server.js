@@ -41,6 +41,7 @@ app.get("/docs", (req, res) => {
   res.sendFile(__dirname + "/views/docs.html");
 });
 
+//Retrieves all of the cohorts in the database collection
 app.get("/api/cohorts", async (req, res) => {
   try {
     const cohorts = await Cohort.find({});
@@ -49,7 +50,7 @@ app.get("/api/cohorts", async (req, res) => {
     res.status(500).json({ error: "Failed to retrieve cohorts" });
   }
 });
-
+//Creates a new cohort
 app.post("/api/cohorts", async (req, res) => {
   try {
     const createdCohort = await Cohort.create(req.body);
@@ -58,7 +59,7 @@ app.post("/api/cohorts", async (req, res) => {
     res.status(500).json({ error: "Failed to create the cohort" });
   }
 });
-
+// Retrieves a specific cohort by id
 app.get("/api/cohorts/:cohortId", async (req, res) => {
   const cohortId = req.params.cohortId;
   try {
@@ -68,7 +69,7 @@ app.get("/api/cohorts/:cohortId", async (req, res) => {
     res.status(500).json({ error: "Failed to retrieve cohort" });
   }
 });
-
+//Updates a specific cohort by id
 app.put("/api/cohorts/:cohortId", async (req, res) => {
   const cohortId = req.params.cohortId;
   try {
@@ -80,7 +81,7 @@ app.put("/api/cohorts/:cohortId", async (req, res) => {
     res.status(500).json({ error: "Failed to update cohort" });
   }
 });
-
+//Deletes a specific cohort by id
 app.delete("/api/cohorts/:cohortId", async (req, res) => {
   try {
     await Cohort.findByIdAndDelete(req.params.cohortId);
@@ -89,7 +90,7 @@ app.delete("/api/cohorts/:cohortId", async (req, res) => {
     res.status(500).json({ error: "Failed to delete cohort" });
   }
 });
-
+//Retrieves all of the students in the database collection
 app.get("/api/students", async (req, res) => {
   try {
     const students = await Student.find({});
@@ -98,7 +99,7 @@ app.get("/api/students", async (req, res) => {
     res.status(500).json({ error: "Failed to retrieve students" });
   }
 });
-
+//Creates a new student
 app.post("/api/students", async (req, res) => {
   try {
     const createdStudent = await Student.create(req.body);
@@ -107,7 +108,7 @@ app.post("/api/students", async (req, res) => {
     res.status(500).json({ error: "Failed to create the student" });
   }
 });
-
+//Retrieves all of the students for a given cohort
 app.get("/api/students/cohort/:cohortId", async (req, res) => {
   const cohortId = req.params.cohortId;
   try {
@@ -117,7 +118,7 @@ app.get("/api/students/cohort/:cohortId", async (req, res) => {
     res.status(500).json({ error: "Failed to retrieve students" });
   }
 });
-
+//Retrieves a specific student by id
 app.get("/api/students/:studentId", async (req, res) => {
   const studentId = req.params.studentId;
   try {
@@ -127,7 +128,7 @@ app.get("/api/students/:studentId", async (req, res) => {
     res.status(500).json({ error: "Failed to retrieve student" });
   }
 });
-
+//Updates a specific student by id
 app.put("/api/students/:studentId", async (req, res) => {
   const studentId = req.params.studentId;
   try {
@@ -141,7 +142,7 @@ app.put("/api/students/:studentId", async (req, res) => {
     res.status(500).json({ error: "Failed to update student" });
   }
 });
-
+//Deletes a specific student by id
 app.delete("/api/students/:studentId", async (req, res) => {
   try {
     await Student.findByIdAndDelete(req.params.studentId);
