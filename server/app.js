@@ -9,6 +9,8 @@ const mongoose = require("mongoose");
 // Import Mongoose models //
 const Cohort = require("./models/Cohort");
 const Student = require("./models/Student");
+// Import Error Handling //
+const errorHandler = require("./middlewares/errorHandler");
 
 // STATIC DATA
 // Devs Team - Import the provided files with JSON data of students and cohorts here:
@@ -48,36 +50,36 @@ app.get("/docs", (req, res) => {
 });
 
 // COHORTS //
-app.get("/api/cohorts", async (req, res) => {
+app.get("/api/cohorts", async (req, res, next) => {
   try {
     const cohorts = await Cohort.find();
     res.json(cohorts);
   } catch (err) {
-    res.status(500).send("Error fetching cohorts");
+    next(err);
   }
 });
 
 // GET a specific cohort by id //
-app.get("/api/cohorts/:cohortId", async (req, res) => {
+app.get("/api/cohorts/:cohortId", async (req, res, next) => {
   try {
     const cohort = await Cohort.findById(req.params.cohortId);
     res.json(cohort);
   } catch (err) {
-    res.status(500).send("Error fetching cohort");
+    next(err);
   }
 });
 // POST a new cohort //
-app.post("/api/cohorts", async (req, res) => {
+app.post("/api/cohorts", async (req, res, next) => {
   try {
     const newCohort = new Cohort(req.body);
     await newCohort.save();
     res.status(201).json(newCohort);
   } catch (err) {
-    res.status(500).send("Error creating cohort");
+    next(err);
   }
 });
 // PUT route to update a specific cohort by id
-app.put("/api/cohorts/:cohortId", async (req, res) => {
+app.put("/api/cohorts/:cohortId", async (req, res, next) => {
   try {
     const updatedCohort = await Cohort.findByIdAndUpdate(
       req.params.cohortId,
@@ -86,67 +88,72 @@ app.put("/api/cohorts/:cohortId", async (req, res) => {
     );
     res.json(updatedCohort);
   } catch (err) {
-    res.status(500).send("Error updating cohort");
+    next(err);
   }
 });
 
 // DELETE route to delete a specific cohort by id
-app.delete("/api/cohorts/:cohortId", async (req, res) => {
+app.delete("/api/cohorts/:cohortId", async (req, res, next) => {
   try {
     await Cohort.findByIdAndDelete(req.params.cohortId);
     res.status(204).send();
   } catch (err) {
-    res.status(500).send("Error deleting cohort");
+    next(err);
   }
 });
 
 // STUDENTS //
 
 // GET /api/students - Returns all students
-app.get("/api/students", async (req, res) => {
+app.get("/api/students", async (req, res, next) => {
   try {
     const students = await Student.find();
     res.json(students);
   } catch (err) {
-    res.status(500).send("Error fetching students");
+    next(err);
   }
 });
 
 // POST /api/students - Creates a new student
-app.post("/api/students", async (req, res) => {
+app.post("/api/students", async (req, res, next) => {
   try {
     const newStudent = new Student(req.body);
     await newStudent.save();
     res.status(201).json(newStudent);
   } catch (err) {
-    res.status(500).send("Error creating student");
+    next(err);
   }
 });
 
 // GET /api/students/cohort/:cohortId - Returns all students of a specified cohort
-app.get("/api/students/cohort/:cohortId", async (req, res) => {
+app.get("/api/students/cohort/:cohortId", async (req, res, next) => {
   try {
     const cohortStudents = await Student.find({
       cohort: req.params.cohortId,
-    });
+    }).populate("cohort");
     res.json(cohortStudents);
   } catch (err) {
-    res.status(500).send("Error fetching students by cohort");
+    next(err);
   }
 });
 
 // GET /api/students/:studentId - Returns the specified student by id
-app.get("/api/students/:studentId", async (req, res) => {
+app.get("/api/students/:studentId", async (req, res, next) => {
   try {
-    const student = await Student.findById(req.params.studentId);
+    const student = await Student.findById(req.params.studentId).populate(
+      "cohort"
+    );
+    if (!student) {
+      return res.status(404).send("Student not found");
+    }
     res.json(student);
   } catch (err) {
-    res.status(500).send("Error fetching student");
+    next(err);
   }
 });
 
 // PUT /api/students/:studentId - Updates the specified student by id
-app.put("/api/students/:studentId", async (req, res) => {
+app.put("/api/students/:studentId", async (req, res, next) => {
   try {
     const student = await Student.findByIdAndUpdate(
       req.params.studentId,
@@ -155,12 +162,12 @@ app.put("/api/students/:studentId", async (req, res) => {
     );
     res.json(student);
   } catch (err) {
-    res.status(500).send("Error updating student");
+    next(err);
   }
 });
 
 // DELETE /api/students/:studentId - Deletes the specified student by id
-app.delete("/api/students/:studentId", async (req, res) => {
+app.delete("/api/students/:studentId", async (req, res, next) => {
   try {
     const student = await Student.findByIdAndDelete(req.params.studentId);
     if (!student) {
@@ -168,8 +175,17 @@ app.delete("/api/students/:studentId", async (req, res) => {
     }
     res.status(204).send();
   } catch (err) {
-    res.status(500).send("Error deleting student");
+    next(err);
   }
+});
+
+// Use the error handling middleware
+app.use(errorHandler);
+// Handle 404 errors
+app.use((req, res, next) => {
+  const error = new Error("Nope not on this page buddy");
+  error.statusCode = 404;
+  next(error);
 });
 
 // START SERVER
