@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
+<<<<<<< feat/day2researchcors
 const cors = require("cors");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
@@ -9,10 +10,22 @@ const PORT = 5005;
 // Devs Team - Import the provided files with JSON data of students and cohorts here:
 const Student = require("./models/Student.model");
 const Cohort = require("./models/Cohort.model");
+=======
+const cookieParser = require("cookie-parser");
+const PORT = 5005;
+const cohorts = require("./data/cohorts.json")
+const students = require("./data/students.json")
+
+// STATIC DATA
+// Devs Team - Import the provided files with JSON data of students and cohorts here:
+// ...
+
+>>>>>>> master
 
 // INITIALIZE EXPRESS APP - https://expressjs.com/en/4x/api.html#express
 const app = express();
 
+<<<<<<< feat/day2researchcors
 mongoose
   .connect("mongodb://127.0.0.1:27017/cohort-tools-api")
   .then((x) =>
@@ -28,17 +41,28 @@ app.use(
   })
 );
 
+=======
+
+// MIDDLEWARE
+// Research Team - Set up CORS middleware here:
+// ...
+>>>>>>> master
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+<<<<<<< feat/day2researchcors
+=======
+
+>>>>>>> master
 // ROUTES - https://expressjs.com/en/starter/basic-routing.html
 // Devs Team - Start working on the routes here:
 // ...
 app.get("/docs", (req, res) => {
   res.sendFile(__dirname + "/views/docs.html");
+<<<<<<< feat/day2researchcors
 });
 
 app.get("/api/cohorts", async (req, res) => {
@@ -155,3 +179,20 @@ app.delete("/api/students/:studentId", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
+=======
+
+})
+app.get('/api/cohorts', (_, response) => {
+  response.json(cohorts)
+})
+
+app.get('/api/students', (_, response) => {
+  response.json(students)
+})
+
+;
+// START SERVER
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
+>>>>>>> master
