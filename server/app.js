@@ -135,7 +135,7 @@ app.post("/api/students", async (req, res) => {
 app.get("/api/students/cohort/:cohortId", async (req, res) => {
   try {
     const cohortStudents = await Student.find({
-      cohortId: req.params.cohortId,
+      cohort: req.params.cohortId,
     });
     res.json(cohortStudents);
   } catch (err) {
