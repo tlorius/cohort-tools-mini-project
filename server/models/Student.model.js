@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const { ObjectId } = mongoose;
 
 const studentSchema = new Schema({
   firstName: { type: String, required: true },
@@ -26,7 +25,7 @@ const studentSchema = new Schema({
   },
   background: { type: String, default: "" },
   image: { type: String, default: "https://i.imgur.com/r8bo8u7.png" },
-  cohort: ObjectId,
+  cohort: { type: mongoose.Types.ObjectId, ref: "Cohort" },
   projects: [],
 });
 

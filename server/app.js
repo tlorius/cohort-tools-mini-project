@@ -7,8 +7,6 @@ const PORT = 5005;
 
 // STATIC DATA
 // Devs Team - Import the provided files with JSON data of students and cohorts here:
-const cohorts = require("./cohorts.json");
-const students = require("./students.json");
 const Student = require("./models/Student.model");
 const Cohort = require("./models/Cohort.model");
 
@@ -43,134 +41,114 @@ app.get("/docs", (req, res) => {
   res.sendFile(__dirname + "/views/docs.html");
 });
 
-app.get("/api/cohorts", (req, res) => {
-  Cohort.find({})
-    .then((cohorts) => {
-      res.status(200).send(cohorts);
-    })
-    .catch((error) => {
-      console.error("Error while retrieving cohorts ->", error);
-      res.status(500).send({ error: "Failed to retrieve cohorts" });
-    });
+app.get("/api/cohorts", async (req, res) => {
+  try {
+    const cohorts = await Cohort.find({});
+    res.status(200).json(cohorts);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to retrieve cohorts" });
+  }
 });
 
-app.post("/api/cohorts", (req, res) => {
-  Cohort.create(req.body)
-    .then((createdCohort) => {
-      console.log("Cohort created ->", createdCohort);
-      res.status(201).send(createdCohort);
-    })
-    .catch((error) => {
-      console.error("Error while creating the cohort ->", error);
-      res.status(500).send({ error: "Failed to create the cohort" });
-    });
+app.post("/api/cohorts", async (req, res) => {
+  try {
+    const createdCohort = await Cohort.create(req.body);
+    res.status(201).json(createdCohort);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to create the cohort" });
+  }
 });
 
-app.get("/api/cohorts/:cohortId", (req, res) => {
+app.get("/api/cohorts/:cohortId", async (req, res) => {
   const cohortId = req.params.cohortId;
-  Cohort.find({ cohort: cohortId })
-    .then((cohort) => {
-      res.status(200).send(cohort);
-    })
-    .catch((error) => {
-      console.error("Error while retrieving cohort ->", error);
-      res.status(500).send({ error: "Failed to retrieve cohort" });
-    });
+  try {
+    const cohort = await Cohort.findById(cohortId);
+    res.status(200).json(cohort);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to retrieve cohort" });
+  }
 });
 
-app.put("/api/cohorts/:cohortId", (req, res) => {
+app.put("/api/cohorts/:cohortId", async (req, res) => {
   const cohortId = req.params.cohortId;
-  Cohort.findByIdAndUpdate(cohortId, req.body, { new: true })
-    .then((updatedCohort) => {
-      res.status(204).send(updatedCohort);
-    })
-    .catch((error) => {
-      console.error("Error while updating cohort ->", error);
-      res.status(500).send({ error: "Failed to update cohort" });
+  try {
+    const updatedCohort = await Cohort.findByIdAndUpdate(cohortId, req.body, {
+      new: true,
     });
+    res.status(200).json(updatedCohort);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update cohort" });
+  }
 });
 
-app.delete("/api/cohorts/:cohortId", (req, res) => {
-  Cohort.findByIdAndDelete(req.params.cohortId)
-    .then((result) => {
-      res.status(204).send();
-    })
-    .catch((error) => {
-      console.error("Error while deleting cohort ->", error);
-      res.status(500).send({ error: "Failed to delete cohort" });
-    });
+app.delete("/api/cohorts/:cohortId", async (req, res) => {
+  try {
+    await Cohort.findByIdAndDelete(req.params.cohortId);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete cohort" });
+  }
 });
 
-app.get("/api/students", (req, res) => {
-  Student.find({})
-    .then((students) => {
-      res.status(200).send(students);
-    })
-    .catch((error) => {
-      console.error("Error while retrieving students ->", error);
-      res.status(500).send({ error: "Failed to retrieve students" });
-    });
+app.get("/api/students", async (req, res) => {
+  try {
+    const students = await Student.find({});
+    res.status(200).json(students);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to retrieve students" });
+  }
 });
 
-app.post("/api/students", (req, res) => {
-  //i guess we can use this shorthand version if we know the request matches the schema
-  Student.create(req.body)
-    .then((createdStudent) => {
-      //remove this log again if it works
-      console.log("Student created ->", createdStudent);
-      res.status(201).send(createdStudent);
-    })
-    .catch((error) => {
-      console.error("Error while creating the student ->", error);
-      res.status(500).send({ error: "Failed to create the student" });
-    });
+app.post("/api/students", async (req, res) => {
+  try {
+    const createdStudent = await Student.create(req.body);
+    res.status(201).json(createdStudent);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to create the student" });
+  }
 });
 
-app.get("/api/students/cohort/:cohortId", (req, res) => {
+app.get("/api/students/cohort/:cohortId", async (req, res) => {
   const cohortId = req.params.cohortId;
-  Student.find({ cohort: cohortId })
-    .then((students) => {
-      res.status(200).send(students);
-    })
-    .catch((error) => {
-      console.error("Error while retrieving students ->", error);
-      res.status(500).send({ error: "Failed to retrieve students" });
-    });
+  try {
+    const students = await Student.find({ cohort: cohortId });
+    res.status(200).json(students);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to retrieve students" });
+  }
 });
 
-app.get("/api/students/:studentId", (req, res) => {
+app.get("/api/students/:studentId", async (req, res) => {
   const studentId = req.params.studentId;
-  Student.find({ _id: studentId })
-    .then((student) => {
-      res.status(200).send(student);
-    })
-    .catch((error) => {
-      console.error("Error while retrieving student ->", error);
-      res.status(500).send({ error: "Failed to retrieve student" });
-    });
+  try {
+    const student = await Student.findById(studentId);
+    res.status(200).json(student);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to retrieve student" });
+  }
 });
 
-app.put("/api/students/:studentId", (req, res) => {
+app.put("/api/students/:studentId", async (req, res) => {
   const studentId = req.params.studentId;
-  Student.findByIdAndUpdate(studentId, req.body, { new: true })
-    .then((updatedStudent) => {
-      res.status(204).send(updatedStudent);
-    })
-    .catch((error) => {
-      console.error("Error while updating student ->", error);
-      res.status(500).send({ error: "Failed to update student" });
-    });
+  try {
+    const updatedStudent = await Student.findByIdAndUpdate(
+      studentId,
+      req.body,
+      { new: true }
+    );
+    res.status(200).json(updatedStudent);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update student" });
+  }
 });
 
-app.delete("/api/students/:studentId", (req, res) => {
-  Student.findByIdAndDelete(req.params.studentId)
-    .then((result) => {
-      res.status(204).send();
-    })
-    .catch((error) => {
-      console.error("Error while deleting student ->", error);
-      res.status(500).send({ error: "Failed to delete student" });
-    });
+app.delete("/api/students/:studentId", async (req, res) => {
+  try {
+    await Student.findByIdAndDelete(req.params.studentId);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete student" });
+  }
 });
 
 // START SERVER

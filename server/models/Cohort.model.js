@@ -27,7 +27,7 @@ const cohortSchema = new Schema({
   inProgress: { type: Boolean, default: false },
   programManager: { type: String, required: true },
   leadTeacher: { type: String, required: true },
-  totalHouses: { type: Number, default: 360 },
+  totalHours: { type: Number, default: 360 },
 });
 
 const Cohort = mongoose.model("Cohort", cohortSchema);
