@@ -1,7 +1,9 @@
 const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
-const PORT = 5005;
+//install npm i dotenv first
+require("dotenv").config();
+const PORT = process.env.PORT;
 // Import CORS //
 const cors = require("cors");
 // Import Mongoose //
