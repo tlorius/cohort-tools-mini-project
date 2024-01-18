@@ -48,7 +48,7 @@ app.get("/api/cohorts", async (req, res, next) => {
   try {
     const cohorts = await Cohort.find({});
     res.status(200).json(cohorts);
-  } catch (error) {
+  } catch (err) {
     next(err);
   }
 });
@@ -57,9 +57,9 @@ app.post("/api/cohorts", async (req, res, next) => {
   try {
     const createdCohort = await Cohort.create(req.body);
     res.status(201).json(createdCohort);
-  } catch (error) {
-    if (error.code === 11000) {
-      res.status(400).json({ error, message: "Duplicate somewhere" });
+  } catch (err) {
+    if (err.code === 11000) {
+      res.status(400).json({ err, message: "Duplicate somewhere" });
     } else {
       next(err);
     }
@@ -71,7 +71,7 @@ app.get("/api/cohorts/:cohortId", async (req, res, next) => {
   try {
     const cohort = await Cohort.findById(cohortId);
     res.status(200).json(cohort);
-  } catch (error) {
+  } catch (err) {
     next(err);
   }
 });
@@ -83,7 +83,7 @@ app.put("/api/cohorts/:cohortId", async (req, res, next) => {
       new: true,
     });
     res.status(200).json(updatedCohort);
-  } catch (error) {
+  } catch (err) {
     next(err);
   }
 });
@@ -92,7 +92,7 @@ app.delete("/api/cohorts/:cohortId", async (req, res, next) => {
   try {
     await Cohort.findByIdAndDelete(req.params.cohortId);
     res.status(204).send();
-  } catch (error) {
+  } catch (err) {
     next(err);
   }
 });
@@ -104,7 +104,7 @@ app.get("/api/students", async (req, res, next) => {
   try {
     const students = await Student.find({}).populate("cohort");
     res.status(200).json(students);
-  } catch (error) {
+  } catch (err) {
     next(err);
   }
 });
@@ -113,9 +113,9 @@ app.post("/api/students", async (req, res, next) => {
   try {
     const createdStudent = await Student.create(req.body);
     res.status(201).json(createdStudent);
-  } catch (error) {
-    if (error.code === 11000) {
-      res.status(400).json({ error, message: "Duplicate somewhere" });
+  } catch (err) {
+    if (err.code === 11000) {
+      res.status(400).json({ err, message: "Duplicate somewhere" });
     } else {
       next(err);
     }
@@ -129,7 +129,7 @@ app.get("/api/students/cohort/:cohortId", async (req, res, next) => {
       "cohort"
     );
     res.status(200).json(students);
-  } catch (error) {
+  } catch (err) {
     next(err);
   }
 });
@@ -139,7 +139,7 @@ app.get("/api/students/:studentId", async (req, res, next) => {
   try {
     const student = await Student.findById(studentId).populate("cohort");
     res.status(200).json(student);
-  } catch (error) {
+  } catch (err) {
     next(err);
   }
 });
@@ -153,7 +153,7 @@ app.put("/api/students/:studentId", async (req, res, next) => {
       { new: true }
     );
     res.status(200).json(updatedStudent);
-  } catch (error) {
+  } catch (err) {
     next(err);
   }
 });
@@ -162,7 +162,7 @@ app.delete("/api/students/:studentId", async (req, res, next) => {
   try {
     await Student.findByIdAndDelete(req.params.studentId);
     res.status(204).send();
-  } catch (error) {
+  } catch (err) {
     next(err);
   }
 });
