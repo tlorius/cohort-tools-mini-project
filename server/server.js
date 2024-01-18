@@ -61,7 +61,7 @@ app.post("/api/cohorts", async (req, res, next) => {
     if (error.code === 11000) {
       res.status(400).json({ error, message: "Duplicate somewhere" });
     } else {
-      next(err);
+      next(error);
     }
   }
 });
@@ -72,7 +72,7 @@ app.get("/api/cohorts/:cohortId", async (req, res, next) => {
     const cohort = await Cohort.findById(cohortId);
     res.status(200).json(cohort);
   } catch (error) {
-    next(err);
+    next(error);
   }
 });
 // PUT Updates a specific cohort by id
@@ -82,17 +82,21 @@ app.put("/api/cohorts/:cohortId", async (req, res, next) => {
     const updatedCohort = await Cohort.findByIdAndUpdate(cohortId, req.body, {
       new: true,
     });
-    res.status(200).json(updatedCohort);
+    
+    const updatedCohortName = updatedCohort.cohortName;
+
+    res.status(200).json({ updatedCohortName, message: `${updatedCohortName} was updated from the db` });
   } catch (error) {
-    next(err);
+    next(error);
   }
 });
 // DELETE Deletes a specific cohort by id
 app.delete("/api/cohorts/:cohortId", async (req, res, next) => {
+  const { cohortId } = req.params;
   try {
-    await Cohort.findByIdAndDelete(req.params.cohortId);
-    res.status(204).send();
-  } catch (error) {
+    const cohortToDelete = await Cohort.findByIdAndDelete(cohortId);
+    res.status(202).json({ message: `${cohortToDelete.cohortName} was removed from the db` });
+  } catch (err) {
     next(err);
   }
 });
@@ -101,6 +105,7 @@ app.delete("/api/cohorts/:cohortId", async (req, res, next) => {
 
 // GET Retrieves all of the students in the database collection
 app.get("/api/students", async (req, res, next) => {
+  
   try {
     const students = await Student.find({}).populate("cohort");
     res.status(200).json(students);
@@ -159,10 +164,11 @@ app.put("/api/students/:studentId", async (req, res, next) => {
 });
 // DELETE Deletes a specific student by id
 app.delete("/api/students/:studentId", async (req, res, next) => {
+  const { studentId } = req.params;
   try {
-    await Student.findByIdAndDelete(req.params.studentId);
-    res.status(204).send();
-  } catch (error) {
+   const studentToDelete =  await Student.findByIdAndDelete(studentId);
+    res.status(202).json({ message: `${studentToDelete.firstName} ${studentToDelete.lastName} was removed from the db` });
+  } catch (err) {
     next(err);
   }
 });
