@@ -1,18 +1,20 @@
 const express = require("express");
 const morgan = require("morgan");
-const cors = require("cors");
-const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const PORT = 5005;
-
-// STATIC DATA
-// Devs Team - Import the provided files with JSON data of students and cohorts here:
+// Import CORS //
+const cors = require("cors");
+// Import Mongoose //
+const mongoose = require("mongoose");
+// Import Mongoose models //
 const Student = require("./models/Student.model");
 const Cohort = require("./models/Cohort.model");
+// Import Error Handling //
+const errorHandler = require("./middlewares/errorHandler");
 
 // INITIALIZE EXPRESS APP - https://expressjs.com/en/4x/api.html#express
 const app = express();
-
+// Connect to the MongoDB database //
 mongoose
   .connect("mongodb://127.0.0.1:27017/cohort-tools-api")
   .then((x) =>
@@ -21,13 +23,13 @@ mongoose
   .catch((err) => console.error("Error connecting to mongo", err));
 
 // MIDDLEWARE
-// Research Team - Set up CORS middleware here:
+// CORS //
 app.use(
   cors({
     origin: ["http://localhost:5173", "http://example.com"], // Add the URLs of allowed origins to this array
   })
 );
-
+// Rest of MIDDLEWARE
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(express.static("public"));
@@ -41,17 +43,17 @@ app.get("/docs", (req, res) => {
   res.sendFile(__dirname + "/views/docs.html");
 });
 
-//Retrieves all of the cohorts in the database collection
-app.get("/api/cohorts", async (req, res) => {
+// Retrieves all of the cohorts in the database collection
+app.get("/api/cohorts", async (req, res, next) => {
   try {
     const cohorts = await Cohort.find({});
     res.status(200).json(cohorts);
   } catch (error) {
-    res.status(500).json({ error: "Failed to retrieve cohorts" });
+    next(err);
   }
 });
-//Creates a new cohort
-app.post("/api/cohorts", async (req, res) => {
+// POST Creates a new cohort
+app.post("/api/cohorts", async (req, res, next) => {
   try {
     const createdCohort = await Cohort.create(req.body);
     res.status(201).json(createdCohort);
@@ -59,22 +61,22 @@ app.post("/api/cohorts", async (req, res) => {
     if (error.code === 11000) {
       res.status(400).json({ error, message: "Duplicate somewhere" });
     } else {
-      res.status(500).json({ error, message: "Unable to create cohort" });
+      next(err);
     }
   }
 });
-// Retrieves a specific cohort by id
-app.get("/api/cohorts/:cohortId", async (req, res) => {
+// GET Retrieves a specific cohort by id
+app.get("/api/cohorts/:cohortId", async (req, res, next) => {
   const cohortId = req.params.cohortId;
   try {
     const cohort = await Cohort.findById(cohortId);
     res.status(200).json(cohort);
   } catch (error) {
-    res.status(500).json({ error: "Failed to retrieve cohort" });
+    next(err);
   }
 });
-//Updates a specific cohort by id
-app.put("/api/cohorts/:cohortId", async (req, res) => {
+// PUT Updates a specific cohort by id
+app.put("/api/cohorts/:cohortId", async (req, res, next) => {
   const cohortId = req.params.cohortId;
   try {
     const updatedCohort = await Cohort.findByIdAndUpdate(cohortId, req.body, {
@@ -82,29 +84,32 @@ app.put("/api/cohorts/:cohortId", async (req, res) => {
     });
     res.status(200).json(updatedCohort);
   } catch (error) {
-    res.status(500).json({ error: "Failed to update cohort" });
+    next(err);
   }
 });
-//Deletes a specific cohort by id
-app.delete("/api/cohorts/:cohortId", async (req, res) => {
+// DELETE Deletes a specific cohort by id
+app.delete("/api/cohorts/:cohortId", async (req, res, next) => {
   try {
     await Cohort.findByIdAndDelete(req.params.cohortId);
     res.status(204).send();
   } catch (error) {
-    res.status(500).json({ error: "Failed to delete cohort" });
+    next(err);
   }
 });
-//Retrieves all of the students in the database collection
-app.get("/api/students", async (req, res) => {
+
+// STUDENTS //
+
+// GET Retrieves all of the students in the database collection
+app.get("/api/students", async (req, res, next) => {
   try {
-    const students = await Student.find({}).populate("cohort")
+    const students = await Student.find({}).populate("cohort");
     res.status(200).json(students);
   } catch (error) {
-    res.status(500).json({ error: "Failed to retrieve students" });
+    next(err);
   }
 });
-//Creates a new student
-app.post("/api/students", async (req, res) => {
+// POST Creates a new student
+app.post("/api/students", async (req, res, next) => {
   try {
     const createdStudent = await Student.create(req.body);
     res.status(201).json(createdStudent);
@@ -112,33 +117,34 @@ app.post("/api/students", async (req, res) => {
     if (error.code === 11000) {
       res.status(400).json({ error, message: "Duplicate somewhere" });
     } else {
-      res.status(500).json({ error, message: "Unable to create student" });
+      next(err);
     }
   }
 });
-//Retrieves all of the students for a given cohort
-app.get("/api/students/cohort/:cohortId", async (req, res) => {
+// GET Retrieves all of the students for a given cohort
+app.get("/api/students/cohort/:cohortId", async (req, res, next) => {
   const cohortId = req.params.cohortId;
   try {
-    const students = await Student.find({ cohort: cohortId }).populate("cohort")
+    const students = await Student.find({ cohort: cohortId }).populate(
+      "cohort"
+    );
     res.status(200).json(students);
   } catch (error) {
-    res.status(500).json({ error: "Failed to retrieve students" });
+    next(err);
   }
 });
-//Retrieves a specific student by id
-app.get("/api/students/:studentId", async (req, res) => {
- 
+// GET Retrieves a specific student by id
+app.get("/api/students/:studentId", async (req, res, next) => {
   const studentId = req.params.studentId;
   try {
-    const student = await Student.findById(studentId).populate("cohort")
+    const student = await Student.findById(studentId).populate("cohort");
     res.status(200).json(student);
   } catch (error) {
-    res.status(500).json({ error: "Failed to retrieve student" });
+    next(err);
   }
 });
-//Updates a specific student by id
-app.put("/api/students/:studentId", async (req, res) => {
+// PUT Updates a specific student by id
+app.put("/api/students/:studentId", async (req, res, next) => {
   const studentId = req.params.studentId;
   try {
     const updatedStudent = await Student.findByIdAndUpdate(
@@ -148,17 +154,26 @@ app.put("/api/students/:studentId", async (req, res) => {
     );
     res.status(200).json(updatedStudent);
   } catch (error) {
-    res.status(500).json({ error: "Failed to update student" });
+    next(err);
   }
 });
-//Deletes a specific student by id
-app.delete("/api/students/:studentId", async (req, res) => {
+// DELETE Deletes a specific student by id
+app.delete("/api/students/:studentId", async (req, res, next) => {
   try {
     await Student.findByIdAndDelete(req.params.studentId);
     res.status(204).send();
   } catch (error) {
-    res.status(500).json({ error: "Failed to delete student" });
+    next(err);
   }
+});
+
+// Use the error handling middleware
+app.use(errorHandler);
+// Handle 404 errors
+app.use((req, res, next) => {
+  const error = new Error("Nope not on this page buddy");
+  error.statusCode = 404;
+  next(error);
 });
 
 // START SERVER
