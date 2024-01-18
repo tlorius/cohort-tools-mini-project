@@ -23,8 +23,6 @@ const studentsData = require("./students.json");*/
 const app = express();
 
 // MIDDLEWARE
-// Research Team - Set up CORS middleware here:
-// ...
 // CORS //
 app.use(cors({ origin: ["http://localhost:5173", "http://example.com"] }));
 // Rest of MIDDLEWARE
