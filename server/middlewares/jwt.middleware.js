@@ -1,13 +1,6 @@
 const { expressjwt: jwt } = require("express-jwt");
 
 //instantiation of the middle ware to validate jtw token
-
-const isAuthenticated = jwt({
-  secret: process.env.TOKEN_SECRET,
-  algorithms: ["HS256"],
-  requestProperty: "payload",
-  getToken: getTokenFromHeaders,
-});
 //function to extract the jwt token from the requests authorization headers
 const getTokenFromHeaders = (req) => {
   //check if the token is available on the request headers
@@ -21,6 +14,13 @@ const getTokenFromHeaders = (req) => {
   }
   return null;
 };
+
+const isAuthenticated = jwt({
+  secret: process.env.TOKEN_SECRET,
+  algorithms: ["HS256"],
+  requestProperty: "payload",
+  getToken: getTokenFromHeaders,
+});
 
 //Export the middleware so that we can use it to create a protected route
 module.exports = { isAuthenticated };

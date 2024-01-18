@@ -13,6 +13,8 @@ const Student = require("./models/Student.model");
 const Cohort = require("./models/Cohort.model");
 // Import Error Handling //
 const errorHandler = require("./middlewares/errorHandler");
+//import auth middleware
+const { isAuthenticated } = require("./middlewares/jwt.middleware");
 
 // INITIALIZE EXPRESS APP - https://expressjs.com/en/4x/api.html#express
 const app = express();
@@ -168,6 +170,14 @@ app.delete("/api/students/:studentId", async (req, res, next) => {
     next(err);
   }
 });
+
+//importing user routes
+const userRouter = require("./routes/user.routes");
+app.use("/api/users", isAuthenticated, userRouter);
+
+//importing auth routes
+const authRouter = require("./routes/auth.routes");
+app.use("/auth", authRouter);
 
 // Use the error handling middleware
 app.use(errorHandler);
