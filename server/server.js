@@ -163,7 +163,7 @@ app.delete("/api/students/:studentId", async (req, res, next) => {
     await Student.findByIdAndDelete(req.params.studentId);
     res.status(204).send();
   } catch (error) {
-    next(err);
+    next(error);
   }
 });
 
