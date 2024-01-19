@@ -9,9 +9,12 @@ const mongoose = require("mongoose");
 // Import Mongoose models //
 const Student = require("./models/Student.model");
 const Cohort = require("./models/Cohort.model");
+
 // Import Error Handling //
 const errorHandler = require("./middlewares/errorHandler");
-
+// import Authenticator Middleware
+const { isAuthenticated } = require("./middlewares/route-guard.middleware");
+require("dotenv").config();
 // INITIALIZE EXPRESS APP - https://expressjs.com/en/4x/api.html#express
 const app = express();
 // Connect to the MongoDB database //
@@ -166,6 +169,13 @@ app.delete("/api/students/:studentId", async (req, res, next) => {
     next(err);
   }
 });
+
+// ROUTER FOR USERS
+const userRouter = require("./routes/user.router");
+app.use("/api/users", isAuthenticated, userRouter);
+// ROUTER FOR AUTHENTICATION
+const authRouter = require("./routes/auth.routes");
+app.use("/auth", authRouter);
 
 // Use the error handling middleware
 app.use(errorHandler);
