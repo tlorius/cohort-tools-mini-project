@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
+const helmet = require("helmet");
 const PORT = 5005;
 // Import CORS //
 const cors = require("cors");
@@ -33,6 +34,7 @@ app.use(
   })
 );
 // Rest of MIDDLEWARE
+app.use(helmet());
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(express.static("public"));
