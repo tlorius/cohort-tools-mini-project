@@ -82,10 +82,7 @@ app.put("/api/cohorts/:cohortId", async (req, res, next) => {
     const updatedCohort = await Cohort.findByIdAndUpdate(cohortId, req.body, {
       new: true,
     });
-    
-    const updatedCohortName = updatedCohort.cohortName;
-
-    res.status(200).json({ updatedCohortName, message: `${updatedCohortName} was updated from the db` });
+    res.status(200).json({ updatedCohort, message: `${updatedCohort} was updated from the db` });
   } catch (error) {
     next(error);
   }
